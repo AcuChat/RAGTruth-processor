@@ -20,6 +20,8 @@ const main = async () => {
 
     console.log(gpt4.length);
 
+    for (let i = 0; i < 10; ++i) console.log(gpt4[i]);
+
 }
 
 main();

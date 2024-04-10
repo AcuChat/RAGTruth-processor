@@ -502,28 +502,7 @@ exports.getGenericText = async (apiKey, prompt, model = "gpt-3.5-turbo-1106", te
     return await this.openAIGenericChatCompletion(apiKey, model, messages);
 }
 
-exports.getAnswerBasedSolelyOnProvidedContext = async (apiKey, prompt, model = "gpt-3.5-turbo-1106", temperature = 0.4) => {
-    messages = [
-        {
-            role: 'system',
-            content: `You accept all the provided Context as true. You answer the prompt solely using the provided context. 
-           
-           Your response solely includes statements that are explicitly conveyed by the context.
-           
-           Your response does not draw any inferences or implications from the context.
-           
-           If the provided context does not provide any information related to the prompt then you answer "I don't know."`,
 
-        },
-        {
-            role: 'user',
-            content: prompt
-        }
-        
-    ]
-
-    return await this.openAIGenericChatCompletion(apiKey, model, messages);
-}
 
 async function turboChatCompletion (prompt, temperature = 0, service = 'You are a helpful, accurate assistant.', messages = []) {
     /* 
