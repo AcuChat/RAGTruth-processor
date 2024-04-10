@@ -10,6 +10,23 @@ const cors = require('cors');
 const fs = require('fs');
 const socketio = require('socket.io');
 
+const data = require('./utils/data');
+
+const main = async () => {
+    const sourceInfo = await data.getSourceInfo();
+    console.log('here');
+    console.log('sourceInfo', sourceInfo.length);
+}
+
+main();
+
+
+
+
+
+/**
+ * Express Server
+ */
 const app = express();
 app.use(express.static('public'));
 app.use(express.json({limit: '200mb'})); 
