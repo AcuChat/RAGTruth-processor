@@ -16,8 +16,10 @@ const main = async () => {
     const sourceInfo = await data.getSourceInfo();
     const responseInfo = await data.getResponseInfo();
 
-    console.log('sourceInfo', sourceInfo.length);
-    console.log('responseInfo', responseInfo.length);
+    const gpt4 = responseInfo.filter(r => r.model === 'gpt-4-0613' && (r.quality !== 'good' || r.labels.length));
+
+    console.log(gpt4.length);
+
 }
 
 main();
