@@ -14,8 +14,10 @@ const data = require('./utils/data');
 
 const main = async () => {
     const sourceInfo = await data.getSourceInfo();
-    console.log('here');
+    const responseInfo = await data.getResponseInfo();
+
     console.log('sourceInfo', sourceInfo.length);
+    console.log('responseInfo', responseInfo.length);
 }
 
 main();
