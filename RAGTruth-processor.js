@@ -11,6 +11,7 @@ const fs = require('fs');
 const socketio = require('socket.io');
 
 const data = require('./utils/data');
+const acurai = require('./utils/acurai');
 
 const getSource = (response, sourceInfo) => sourceInfo.find(si => si.source_id === response.source_id);
 
@@ -40,6 +41,8 @@ const main = async () => {
             origResponse: response.response,
             hallucinations: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
         }
+
+        packaged.response = await acurai.processRagRequest(packaged.question, packaged.passages, packaged.model, {temperature: packaged.temperature});
         console.log('packaged', packaged)
         break;
     }
