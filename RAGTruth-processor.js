@@ -23,14 +23,24 @@ const main = async () => {
     console.log(gpt4.length);
 
     for (let i = 0; i < gpt4.length; ++i) {
-        
-        const source = getSource(gpt4[i], sourceInfo);
+        const response = gpt4[i];
+        const source = getSource(response, sourceInfo);
         if (!source) continue;
         const taskType = source.task_type;
         if (taskType !== 'QA') continue;
-        console.log(`#${i}`, gpt4[i]);
+        console.log(`#${i}`, response);
         console.log(source);
-
+        const packaged = {
+            responseId: response.id,
+            model: response.model,
+            temperature: response.temperature,
+            taskType: source.task_type,
+            question: source.source_info.question,
+            passages: source.source_info.passages,
+            origResponse: response.response,
+            hallucinations: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
+        }
+        console.log('packaged', packaged)
         break;
     }
 
