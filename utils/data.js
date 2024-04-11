@@ -9,10 +9,11 @@ exports.getSourceInfo = () => {
         axios.get('https://www.michaelcalvinwood.net/datasets/RAGTruth/source_info.jsonl')
         .then(response => {
           const lines = response.data.split("\n");
+          console.log('Num Sources', lines.length);
           for (let i = 0; i < lines.length; ++i) {
             try {
               const obj = JSON.parse(lines[i]);
-              if (obj.task_type === 'QA') sourceInfo.push(obj);
+              sourceInfo.push(obj);
             } catch (err) {
               //console.error('Could not push ', i);
             }

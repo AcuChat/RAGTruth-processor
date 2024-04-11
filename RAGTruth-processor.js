@@ -12,6 +12,8 @@ const socketio = require('socket.io');
 
 const data = require('./utils/data');
 
+const getSource = (response, sourceInfo) => sourceInfo.find(si => si.source_id === response.source_id);
+
 const main = async () => {
     const sourceInfo = await data.getSourceInfo();
     const responseInfo = await data.getResponseInfo();
@@ -20,7 +22,15 @@ const main = async () => {
 
     console.log(gpt4.length);
 
-    for (let i = 0; i < 10; ++i) console.log(gpt4[i]);
+    for (let i = 0; i < 10; ++i) {
+        console.log(`#${i}`, gpt4[i]);
+        const source = getSource(gpt4[i], sourceInfo);
+        
+
+        console.log(source);
+
+        break;
+    }
 
 }
 
