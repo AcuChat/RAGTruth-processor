@@ -31,18 +31,25 @@ const main = async () => {
         if (taskType !== 'QA') continue;
         console.log(`#${i}`, response);
         console.log(source);
+
+        const contexts = source.source_info.passages.split("\n\n");
+        console.log('contexts', contexts);
+        for (let j = 0; j < contexts.length; ++j) {
+            if (contexts[j].startsWith(`passage ${j+1}:`)) contexts[j] = contexts[j].replace(`passage ${j+1}:`, '');
+        }
+
         const packaged = {
             responseId: response.id,
             model: response.model,
             temperature: response.temperature,
             taskType: source.task_type,
             question: source.source_info.question,
-            passages: source.source_info.passages,
+            contexts,
             origResponse: response.response,
             hallucinations: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
         }
 
-        packaged.response = await acurai.processRagRequest(packaged.question, packaged.passages.split("\n\n"), packaged.model, {temperature: packaged.temperature});
+        //packaged.response = await acurai.processRagRequest(packaged.question, packaged.passages.split("\n\n"), packaged.model, {temperature: packaged.temperature});
         console.log('packaged', packaged)
         break;
     }
