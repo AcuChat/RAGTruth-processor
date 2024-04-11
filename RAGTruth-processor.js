@@ -22,11 +22,13 @@ const main = async () => {
 
     console.log(gpt4.length);
 
-    for (let i = 0; i < 10; ++i) {
-        console.log(`#${i}`, gpt4[i]);
-        const source = getSource(gpt4[i], sourceInfo);
+    for (let i = 0; i < gpt4.length; ++i) {
         
-
+        const source = getSource(gpt4[i], sourceInfo);
+        if (!source) continue;
+        const taskType = source.task_type;
+        if (taskType !== 'QA') continue;
+        console.log(`#${i}`, gpt4[i]);
         console.log(source);
 
         break;
