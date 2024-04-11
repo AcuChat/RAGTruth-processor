@@ -42,7 +42,7 @@ const main = async () => {
             hallucinations: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
         }
 
-        packaged.response = await acurai.processRagRequest(packaged.question, packaged.passages, packaged.model, {temperature: packaged.temperature});
+        packaged.response = await acurai.processRagRequest(packaged.question, packaged.passages.split("\n\n"), packaged.model, {temperature: packaged.temperature});
         console.log('packaged', packaged)
         break;
     }

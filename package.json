@@ -9,11 +9,20 @@
   "author": "Michael Wood",
   "license": "SEE LICENSE IN license.md",
   "dependencies": {
+    "@google-cloud/vertexai": "^1.0.0",
+    "@google/generative-ai": "^0.5.0",
+    "@octoai/client": "^0.5.2",
     "axios": "^1.6.8",
+    "convert-string": "^0.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "gpt-3-encoder": "^1.1.4",
     "https": "^1.0.0",
-    "socket.io": "^4.7.5"
+    "lodash": "^4.17.21",
+    "openai": "^3.3.0",
+    "socket.io": "^4.7.5",
+    "wink-eng-lite-web-model": "^1.6.0",
+    "wink-nlp": "^2.2.0"
   }
 }
