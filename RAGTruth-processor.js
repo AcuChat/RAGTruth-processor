@@ -22,6 +22,7 @@ const main = async () => {
     const gpt4 = responseInfo.filter(r => r.model === 'gpt-4-0613' && (r.quality !== 'good' || r.labels.length));
 
     console.log(gpt4.length);
+    let count = 0;
 
     for (let i = 0; i < gpt4.length; ++i) {
         const response = gpt4[i];
@@ -29,11 +30,8 @@ const main = async () => {
         if (!source) continue;
         const taskType = source.task_type;
         if (taskType !== 'QA') continue;
-        console.log(`#${i}`, response);
-        console.log(source);
 
         const contexts = source.source_info.passages.split("\n\n");
-        console.log('contexts', contexts);
         for (let j = 0; j < contexts.length; ++j) {
             if (contexts[j].startsWith(`passage ${j+1}:`)) contexts[j] = contexts[j].replace(`passage ${j+1}:`, '');
         }
@@ -49,9 +47,11 @@ const main = async () => {
             hallucinations: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
         }
 
-        packaged.response = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
-        console.log('packaged', packaged)
-        break;
+        packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
+        console.log(`Packaged ${i+1}:\n`, packaged);
+
+        ++count;
+        if (count > 4) break;
     }
 
 }

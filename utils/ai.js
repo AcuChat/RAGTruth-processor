@@ -430,7 +430,7 @@ const testMeNow = async () => {
 
 
 exports.openAIGenericChatCompletion = async (apiKey, model, messages, temperature = .4, top_p = null, maxRetries = 10) => {
-    console.log('ai.openAIGenericChatCompletion model', model, JSON.stringify(messages, null, 4))
+    //console.log('ai.openAIGenericChatCompletion model', model, JSON.stringify(messages, null, 4))
     const request = {
         url: 'https://api.openai.com/v1/chat/completions',
         method: 'post',
