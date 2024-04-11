@@ -15,6 +15,18 @@ const acurai = require('./utils/acurai');
 
 const getSource = (response, sourceInfo) => sourceInfo.find(si => si.source_id === response.source_id);
 
+const displayLabelTypes = async () => {
+    const responseInfo = await data.getResponseInfo();
+    const labelTypes = new Set();
+    responseInfo.forEach(r => {
+        for (let i = 0; i < r.labels.length; ++i) {
+            labelTypes.add(r.labels[i].label_type)
+        }
+    })
+
+    console.log(labelTypes);
+}
+
 const main = async () => {
     const sourceInfo = await data.getSourceInfo();
     const responseInfo = await data.getResponseInfo();
@@ -44,20 +56,24 @@ const main = async () => {
             question: source.source_info.question,
             contexts,
             origResponse: response.response,
-            hallucinations: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
+            disparities: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
         }
 
-        packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
-        console.log(`Packaged ${i+1}:\n`, packaged);
+        if (response.id === '11898') {
+            console.log(response);
+            console.log(source);
+        }
+        //packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
+        //console.log(`Packaged ${i+1}:\n`, packaged);
 
-        ++count;
-        if (count > 4) break;
+        // ++count;
+        // if (count > 4) break;
     }
 
 }
 
-main();
-
+//main();
+displayLabelTypes();
 
 
 
