@@ -16,6 +16,8 @@ const socketio = require('socket.io');
 const data = require('./utils/data');
 const acurai = require('./utils/acurai');
 const mysql = require('./utils/mysql');
+const endpoints = require('./utils/endpoints');
+
 const { table } = require('console');
 
 
@@ -123,11 +125,11 @@ const main = async () => {
         await mysql.query(q);
 
         // TODO: Store packaged data in SQL
-
+        ++count;
         console.log(`Packaged ${i+1}`);
     }
 
-    console.log("ALL DONE!")
+    console.log("ALL DONE!", count);
 }
 
 main();
@@ -145,6 +147,8 @@ app.use(express.json({limit: '200mb'}));
 app.use(cors());
 
 app.get('/', async (req, res) => res.status(200).send('hello world'));
+app.get('/tables', (req, res) => endpoints.getTables(req, res));
+
 
 const httpsServer = https.createServer({
     key: fs.readFileSync(privateKeyPath),
