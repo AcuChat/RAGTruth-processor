@@ -15,6 +15,9 @@ const socketio = require('socket.io');
 
 const data = require('./utils/data');
 const acurai = require('./utils/acurai');
+const mysql = require('./utils/mysql');
+
+
 
 const getSource = (response, sourceInfo) => sourceInfo.find(si => si.source_id === response.source_id);
 
@@ -40,6 +43,10 @@ const labelIsOfInterest = labels => {
 }
 
 const main = async () => {
+    const result = await mysql.query('SHOW DATABASES');
+    console.log(result);
+    return;
+
     const sourceInfo = await data.getSourceInfo();
     const responseInfo = await data.getResponseInfo();
 
