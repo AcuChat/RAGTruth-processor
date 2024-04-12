@@ -67,7 +67,8 @@ const createTable = async () => {
     const tableName = `packages__${formatDate(null)}`
     const q = `CREATE TABLE ${tableName} (
         id BIGINT AUTO_INCREMENT PRIMARY KEY,
-        package MEDIUMTEXT NOT NULL
+        package MEDIUMTEXT NOT NULL,
+        status VARCHAR(64) DEFAULT 'new'
     )` 
 
     await mysql.query(q);
@@ -123,10 +124,10 @@ const main = async () => {
 
         // TODO: Store packaged data in SQL
 
-        console.log(`Packaged ${i+1}:\n`, packaged);
-        ++count;
-        if (count > 2) break;
+        console.log(`Packaged ${i+1}`);
     }
+
+    console.log("ALL DONE!")
 }
 
 main();
