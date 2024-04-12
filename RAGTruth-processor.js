@@ -4,6 +4,9 @@ const hostname = 'acurai.ai'
 const privateKeyPath = `/etc/ssl-keys/acurai.ai/acurai.ai.key`;
 const fullchainPath = `/etc/ssl-keys/acurai.ai/acurai.ai.pem`;
 
+const ObjectsToCsv = require('objects-to-csv');
+
+
 const express = require('express');
 const https = require('https');
 const cors = require('cors');
@@ -27,6 +30,15 @@ const displayLabelTypes = async () => {
     console.log(labelTypes);
 }
 
+const labelIsOfInterest = labels => {
+    for (let i = 0; i < labels.length; ++i) {
+        if (labels[i].label_type === 'Evident Conflict') return true;
+        if (labels[i].label_type === 'Subtle Conflict') return true;   
+    }
+
+    return false;
+}
+
 const main = async () => {
     const sourceInfo = await data.getSourceInfo();
     const responseInfo = await data.getResponseInfo();
@@ -36,18 +48,29 @@ const main = async () => {
     console.log(gpt4.length);
     let count = 0;
 
-    for (let i = 0; i < gpt4.length; ++i) {
-        const response = gpt4[i];
+    // TODO: Create SQL table
+
+    for (let i = 0; i < responseInfo.length; ++i) {
+        const response = responseInfo[i];
+
+        // Filter which responses to process
+        if (response.model !== 'gpt-4-0613') continue;
+        if (!response.labels.length) continue;
+        if (!labelIsOfInterest(response.labels)) continue;
+        
+        // Filter which source types to process
         const source = getSource(response, sourceInfo);
         if (!source) continue;
         const taskType = source.task_type;
         if (taskType !== 'QA') continue;
 
+        // Clean contexts
         const contexts = source.source_info.passages.split("\n\n");
         for (let j = 0; j < contexts.length; ++j) {
             if (contexts[j].startsWith(`passage ${j+1}:`)) contexts[j] = contexts[j].replace(`passage ${j+1}:`, '');
         }
 
+        // Package data
         const packaged = {
             responseId: response.id,
             model: response.model,
@@ -59,21 +82,18 @@ const main = async () => {
             disparities: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
         }
 
-        if (response.id === '11898') {
-            console.log(response);
-            console.log(source);
-        }
-        //packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
-        //console.log(`Packaged ${i+1}:\n`, packaged);
+        packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
 
-        // ++count;
-        // if (count > 4) break;
+        // TODO: Store packaged data in SQL
+
+        console.log(`Packaged ${i+1}:\n`, packaged);
+        ++count;
+        if (count > 2) break;
     }
-
 }
 
-//main();
-displayLabelTypes();
+main();
+//displayLabelTypes();
 
 
 
