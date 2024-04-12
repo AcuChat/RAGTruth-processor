@@ -16,6 +16,7 @@ const socketio = require('socket.io');
 const data = require('./utils/data');
 const acurai = require('./utils/acurai');
 const mysql = require('./utils/mysql');
+const { table } = require('console');
 
 
 
@@ -63,12 +64,15 @@ function formatDate(date) {
 }
 
 const createTable = async () => {
-    const q = `CREATE TABLE packages__${formatDate(null)} (
+    const tableName = `packages__${formatDate(null)}`
+    const q = `CREATE TABLE ${tableName} (
         id BIGINT AUTO_INCREMENT PRIMARY KEY,
         package MEDIUMTEXT NOT NULL
     )` 
 
     await mysql.query(q);
+
+    return tableName;
 }
 
 const main = async () => {
@@ -77,10 +81,9 @@ const main = async () => {
 
     let count = 0;
 
-    // TODO: Create SQL table
+    //Create SQL table
     await createTable();
-    return;
-
+    
     for (let i = 0; i < responseInfo.length; ++i) {
         const response = responseInfo[i];
 
@@ -114,6 +117,8 @@ const main = async () => {
         }
 
         packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
+
+        const q = `INSERT INTO `
 
         // TODO: Store packaged data in SQL
 
