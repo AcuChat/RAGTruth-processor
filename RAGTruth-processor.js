@@ -61,27 +61,25 @@ function formatDate(date) {
 
     return [year, month, day, hour, minutes].join('_');
 }
- 
-console.log(formatDate(null));
 
-const createTable = () => {
+const createTable = async () => {
+    const q = `CREATE TABLE packages__${formatDate(null)} (
+        id BIGINT AUTO_INCREMENT PRIMARY KEY,
+        package MEDIUMTEXT NOT NULL
+    )` 
 
+    await mysql.query(q);
 }
 
 const main = async () => {
-    const result = await mysql.query('SHOW DATABASES');
-    console.log(result);
-    return;
-
     const sourceInfo = await data.getSourceInfo();
     const responseInfo = await data.getResponseInfo();
 
-    const gpt4 = responseInfo.filter(r => r.model === 'gpt-4-0613' && (r.quality !== 'good' || r.labels.length));
-
-    console.log(gpt4.length);
     let count = 0;
 
     // TODO: Create SQL table
+    await createTable();
+    return;
 
     for (let i = 0; i < responseInfo.length; ++i) {
         const response = responseInfo[i];
