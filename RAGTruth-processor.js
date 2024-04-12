@@ -82,7 +82,7 @@ const main = async () => {
     let count = 0;
 
     //Create SQL table
-    await createTable();
+    const tableName = await createTable();
     
     for (let i = 0; i < responseInfo.length; ++i) {
         const response = responseInfo[i];
@@ -118,7 +118,8 @@ const main = async () => {
 
         packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
 
-        const q = `INSERT INTO `
+        const q = `INSERT INTO ${tableName} (package) VALUES (${mysql.escape(JSON.stringify(packaged))})`;
+        await mysql.query(q);
 
         // TODO: Store packaged data in SQL
 
