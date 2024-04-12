@@ -42,6 +42,32 @@ const labelIsOfInterest = labels => {
     return false;
 }
 
+function formatDate(date) {
+    var d = date === null ? new Date() : new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear(),
+        hour = d.getHours(),
+        minutes = d.getMinutes();
+
+    if (month.length < 2) 
+        month = '0' + month;
+    if (day.length < 2) 
+        day = '0' + day;
+    if (hour.length < 2)
+        hour = '0' + hour;
+    if (minutes.length < 2)
+        minutes = '0' + minutes;
+
+    return [year, month, day, hour, minutes].join('_');
+}
+ 
+console.log(formatDate(null));
+
+const createTable = () => {
+
+}
+
 const main = async () => {
     const result = await mysql.query('SHOW DATABASES');
     console.log(result);
