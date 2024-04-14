@@ -148,7 +148,7 @@ app.use(cors());
 
 app.get('/', async (req, res) => res.status(200).send('hello world'));
 app.get('/tables', (req, res) => endpoints.getTables(req, res));
-
+app.get('/data', (req, res) => endpoints.getData(req, res));
 
 const httpsServer = https.createServer({
     key: fs.readFileSync(privateKeyPath),
