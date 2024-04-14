@@ -107,7 +107,7 @@ const main = async () => {
             if (contexts[j].startsWith(`passage ${j+1}:`)) contexts[j] = contexts[j].replace(`passage ${j+1}:`, '');
         }
         const passages = [...contexts];
-        contexts = acurai.processContexts(contexts);
+        contexts = await acurai.processContexts(contexts);
 
         // console.log(response)
         // console.log(source);
@@ -128,7 +128,6 @@ const main = async () => {
         }
 
         packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
-        break;
 
         const q = `INSERT INTO ${tableName} (package) VALUES (${mysql.escape(JSON.stringify(packaged))})`;
         await mysql.query(q);
