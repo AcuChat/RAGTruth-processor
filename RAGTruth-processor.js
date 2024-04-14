@@ -140,7 +140,7 @@ const main = async () => {
     console.log("ALL DONE!", count);
 }
 
-main();
+//main();
 //displayLabelTypes();
 
 
