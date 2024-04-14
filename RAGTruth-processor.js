@@ -102,14 +102,16 @@ const main = async () => {
         if (taskType !== 'QA') continue;
 
         // Clean contexts
-        const contexts = source.source_info.passages.split("\n\n");
+        let contexts = source.source_info.passages.split("\n\n");
         for (let j = 0; j < contexts.length; ++j) {
             if (contexts[j].startsWith(`passage ${j+1}:`)) contexts[j] = contexts[j].replace(`passage ${j+1}:`, '');
         }
+        const passages = [...contexts];
+        contexts = acurai.processContexts(contexts);
 
-        console.log(response)
-        console.log(source);
-        break;
+        // console.log(response)
+        // console.log(source);
+        // break;
 
         // Package data
         const packaged = {
@@ -119,7 +121,7 @@ const main = async () => {
             temperature: response.temperature,
             taskType: source.task_type,
             question: source.source_info.question,
-            passages: source.source_info.passages,
+            passages,
             contexts,
             origResponse: response.response,
             disparities: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
