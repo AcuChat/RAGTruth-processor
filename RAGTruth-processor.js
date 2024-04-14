@@ -128,6 +128,7 @@ const main = async () => {
         }
 
         packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
+        break;
 
         const q = `INSERT INTO ${tableName} (package) VALUES (${mysql.escape(JSON.stringify(packaged))})`;
         await mysql.query(q);
