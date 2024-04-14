@@ -107,13 +107,19 @@ const main = async () => {
             if (contexts[j].startsWith(`passage ${j+1}:`)) contexts[j] = contexts[j].replace(`passage ${j+1}:`, '');
         }
 
+        console.log(response)
+        console.log(source);
+        break;
+
         // Package data
         const packaged = {
             responseId: response.id,
+            sourceId: response.source_id,
             model: response.model,
             temperature: response.temperature,
             taskType: source.task_type,
             question: source.source_info.question,
+            passages: source.source_info.passages,
             contexts,
             origResponse: response.response,
             disparities: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
@@ -148,6 +154,7 @@ app.use(cors());
 
 app.get('/', async (req, res) => res.status(200).send('hello world'));
 app.get('/tables', (req, res) => endpoints.getTables(req, res));
+
 app.post('/data', (req, res) => endpoints.getData(req, res));
 
 const httpsServer = https.createServer({
