@@ -21,11 +21,12 @@ const endpoints = require('./utils/endpoints');
 const { table } = require('console');
 
 /**
- * Labels:
- *  Subtle Conflict
- *  Evident Conflict
- *  
+ * Available Options
  */
+const allTaskTypes = ['Summary', 'Data2txt', 'QA'];
+const allLabels = ['Subtle Baseless Info', 'Evident Baseless Info', 'Subtle Conflict', 'Evident Conflict'];
+
+
 
 
 const getSource = (response, sourceInfo) => sourceInfo.find(si => si.source_id === response.source_id);
@@ -40,6 +41,16 @@ const displayLabelTypes = async () => {
     })
 
     console.log(labelTypes);
+}
+
+const displayTaskTypes = async () => {
+    const sourceInfo = await data.getSourceInfo();
+    const taskTypes = new Set();
+    sourceInfo.forEach(s => {
+        taskTypes.add(s.task_type)
+    })
+
+    console.log(taskTypes);
 }
 
 const labelIsOfInterest = (labels, labelsOfInterest) => {
@@ -145,15 +156,15 @@ const generateTable = async (labelsOfInterest, taskTypes, models) => {
 
         // TODO: Store packaged data in SQL
         ++count;
-        console.log(`Packaged ${i+1}`, response.model, response.taskType, packaged.disparities);
+        console.log(`Packaged ${i+1}`, packaged.model, packaged.taskType, packaged.disparities);
     }
 
     console.log("ALL DONE!", count);
 }
 
-generateTable(['Subtle Conflict', 'Evident Conflict'], [], ['gpt-4-0613'])
-//displayLabelTypes();
-
+//generateTable(['Subtle Conflict', 'Evident Conflict'], [], ['gpt-4-0613'])
+displayLabelTypes();
+displayTaskTypes();
 
 
 
