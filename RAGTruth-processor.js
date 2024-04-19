@@ -144,11 +144,13 @@ const generateTable = async (labelsOfInterest, taskTypes, models) => {
         // Filter which source types to process
         const source = getSource(response, sourceInfo);
         if (!source) continue;
+        
         const taskType = source.task_type;
-        if (taskType !== 'QA') continue;
+        test = taskTypes.find(tt => tt === taskType);
+        if (!test) continue;
 
         // Clean contexts
-        let contexts = source.source_info.passages.split("\n\n");
+        let contexts = source.source_info?.passages ? source.source_info.passages.split("\n\n") : source.source_info;
         for (let j = 0; j < contexts.length; ++j) {
             if (contexts[j].startsWith(`passage ${j+1}:`)) contexts[j] = contexts[j].replace(`passage ${j+1}:`, '');
         }
@@ -186,7 +188,7 @@ const generateTable = async (labelsOfInterest, taskTypes, models) => {
     console.log("ALL DONE!", count);
 }
 
-//generateTable(['Subtle Conflict', 'Evident Conflict'], [], ['gpt-4-0613'])
+generateTable(['Subtle Conflict', 'Evident Conflict'], ['Summary'], ['gpt-4-0613'])
 displayLabelTypes();
 displayTaskTypes();
 displayModels();
