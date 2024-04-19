@@ -20,6 +20,12 @@ const endpoints = require('./utils/endpoints');
 
 const { table } = require('console');
 
+/**
+ * Labels:
+ *  Subtle Conflict
+ *  Evident Conflict
+ *  
+ */
 
 
 const getSource = (response, sourceInfo) => sourceInfo.find(si => si.source_id === response.source_id);
@@ -36,13 +42,14 @@ const displayLabelTypes = async () => {
     console.log(labelTypes);
 }
 
-const labelIsOfInterest = labels => {
+const labelIsOfInterest = (labels, labelsOfInterest) => {
+    const newLabels = [];
     for (let i = 0; i < labels.length; ++i) {
-        if (labels[i].label_type === 'Evident Conflict') return true;
-        if (labels[i].label_type === 'Subtle Conflict') return true;   
+        const test = labelsOfInterest.find(loi => loi === labels[i].label_type);
+        if (test) newLabels.push(labels[i]); 
     }
 
-    return false;
+    return newLabels;
 }
 
 function formatDate(date) {
@@ -78,7 +85,7 @@ const createTable = async () => {
     return tableName;
 }
 
-const main = async () => {
+const generateTable = async (labelsOfInterest, taskTypes, models) => {
     const sourceInfo = await data.getSourceInfo();
     const responseInfo = await data.getResponseInfo();
 
@@ -91,9 +98,13 @@ const main = async () => {
         const response = responseInfo[i];
 
         // Filter which responses to process
+        if (!labelIsOfInterest(response.labels, labelsOfInterest)) continue;
+        response.labels = labelIsOfInterest(response.labels, labelsOfInterest);
+        if (!response.labels.length) continue;
+
         if (response.model !== 'gpt-4-0613') continue;
         if (!response.labels.length) continue;
-        if (!labelIsOfInterest(response.labels)) continue;
+        
         
         // Filter which source types to process
         const source = getSource(response, sourceInfo);
@@ -127,20 +138,20 @@ const main = async () => {
             disparities: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
         }
 
-        packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
+        //packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
 
-        const q = `INSERT INTO ${tableName} (package) VALUES (${mysql.escape(JSON.stringify(packaged))})`;
-        await mysql.query(q);
+        //const q = `INSERT INTO ${tableName} (package) VALUES (${mysql.escape(JSON.stringify(packaged))})`;
+        //await mysql.query(q);
 
         // TODO: Store packaged data in SQL
         ++count;
-        console.log(`Packaged ${i+1}`);
+        console.log(`Packaged ${i+1}`, packaged.disparities);
     }
 
     console.log("ALL DONE!", count);
 }
 
-//main();
+generateTable(['Subtle Conflict', 'Evident Conflict'])
 //displayLabelTypes();
 
 
