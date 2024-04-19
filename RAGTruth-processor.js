@@ -112,7 +112,7 @@ const createTable = async () => {
     const q = `CREATE TABLE ${tableName} (
         id BIGINT AUTO_INCREMENT PRIMARY KEY,
         package MEDIUMTEXT NOT NULL,
-        status VARCHAR(64) DEFAULT 'new',
+        status VARCHAR(64) DEFAULT 'new'
     )` 
 
     await mysql.query(q);
@@ -179,24 +179,24 @@ const generateTable = async (labelsOfInterest, taskTypes, models) => {
             meta: {labelsOfInterest, taskTypes, models}
         }
 
-        //packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
+        packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
 
-        //const q = `INSERT INTO ${tableName} (package) VALUES (${mysql.escape(JSON.stringify(packaged))})`;
-        //await mysql.query(q);
+        const q = `INSERT INTO ${tableName} (package) VALUES (${mysql.escape(JSON.stringify(packaged))})`;
+        console.log(q);
+        await mysql.query(q);
 
         // TODO: Store packaged data in SQL
         ++count;
-        console.log(`Packaged ${i+1}`, packaged);
-        break;
+        console.log(`Packaged ${i+1}`);
     }
 
     console.log("ALL DONE!", count);
 }
 
-generateTable(['Subtle Conflict', 'Evident Conflict'], ['Summary'], ['gpt-4-0613'])
-displayLabelTypes();
-displayTaskTypes();
-displayModels();
+generateTable(['Subtle Conflict', 'Evident Conflict'], ['QA'], ['gpt-3.5-turbo-0613'])
+// displayLabelTypes();
+// displayTaskTypes();
+// displayModels();
 
 
 /**
