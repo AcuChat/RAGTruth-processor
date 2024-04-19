@@ -145,7 +145,7 @@ const generateTable = async (labelsOfInterest, taskTypes, models) => {
 
         // TODO: Store packaged data in SQL
         ++count;
-        console.log(`Packaged ${i+1}`, packaged.disparities);
+        console.log(`Packaged ${i+1}`, response.model, response.taskType, packaged.disparities);
     }
 
     console.log("ALL DONE!", count);
