@@ -102,8 +102,8 @@ const generateTable = async (labelsOfInterest, taskTypes, models) => {
         response.labels = labelIsOfInterest(response.labels, labelsOfInterest);
         if (!response.labels.length) continue;
 
-        if (response.model !== 'gpt-4-0613') continue;
-        if (!response.labels.length) continue;
+        let test = models.find(m => m === response.model);
+        if (!test) continue;
         
         
         // Filter which source types to process
@@ -151,7 +151,7 @@ const generateTable = async (labelsOfInterest, taskTypes, models) => {
     console.log("ALL DONE!", count);
 }
 
-generateTable(['Subtle Conflict', 'Evident Conflict'])
+generateTable(['Subtle Conflict', 'Evident Conflict'], [], ['gpt-4-0613'])
 //displayLabelTypes();
 
 
