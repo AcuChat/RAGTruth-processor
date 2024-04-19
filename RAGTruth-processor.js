@@ -193,7 +193,7 @@ const generateTable = async (labelsOfInterest, taskTypes, models) => {
     console.log("ALL DONE!", count);
 }
 
-generateTable(['Subtle Conflict', 'Evident Conflict'], ['QA'], ['gpt-3.5-turbo-0613'])
+// generateTable(['Subtle Conflict', 'Evident Conflict'], ['QA'], ['gpt-3.5-turbo-0613'])
 // displayLabelTypes();
 // displayTaskTypes();
 // displayModels();
