@@ -112,7 +112,7 @@ const createTable = async () => {
     const q = `CREATE TABLE ${tableName} (
         id BIGINT AUTO_INCREMENT PRIMARY KEY,
         package MEDIUMTEXT NOT NULL,
-        status VARCHAR(64) DEFAULT 'new'
+        status VARCHAR(64) DEFAULT 'new',
     )` 
 
     await mysql.query(q);
@@ -151,11 +151,14 @@ const generateTable = async (labelsOfInterest, taskTypes, models) => {
 
         // Clean contexts
         let contexts = source.source_info?.passages ? source.source_info.passages.split("\n\n") : source.source_info;
-        for (let j = 0; j < contexts.length; ++j) {
-            if (contexts[j].startsWith(`passage ${j+1}:`)) contexts[j] = contexts[j].replace(`passage ${j+1}:`, '');
+        const passages = source.source_info?.passages ? [...contexts] : contexts;
+        if (source.source_info?.passages) {
+            for (let j = 0; j < contexts.length; ++j) {
+                if (contexts[j].startsWith(`passage ${j+1}:`)) contexts[j] = contexts[j].replace(`passage ${j+1}:`, '');
+            }
+            
+            contexts = await acurai.processContexts(contexts);
         }
-        const passages = [...contexts];
-        contexts = await acurai.processContexts(contexts);
 
         // console.log(response)
         // console.log(source);
@@ -173,6 +176,7 @@ const generateTable = async (labelsOfInterest, taskTypes, models) => {
             contexts,
             origResponse: response.response,
             disparities: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
+            meta: {labelsOfInterest, taskTypes, models}
         }
 
         //packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
@@ -182,7 +186,8 @@ const generateTable = async (labelsOfInterest, taskTypes, models) => {
 
         // TODO: Store packaged data in SQL
         ++count;
-        console.log(`Packaged ${i+1}`, packaged.model, packaged.taskType, packaged.disparities);
+        console.log(`Packaged ${i+1}`, packaged);
+        break;
     }
 
     console.log("ALL DONE!", count);
