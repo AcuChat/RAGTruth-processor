@@ -23,13 +23,37 @@ const { table } = require('console');
 /**
  * Available Options
  */
-const allTaskTypes = ['Summary', 'Data2txt', 'QA'];
-const allLabels = ['Subtle Baseless Info', 'Evident Baseless Info', 'Subtle Conflict', 'Evident Conflict'];
+const allTaskTypes = [
+    'Summary', 
+    'Data2txt', 
+    'QA'];
+const allModels = [
+    'gpt-4-0613',
+    'gpt-3.5-turbo-0613',
+    'mistral-7B-instruct',
+    'llama-2-7b-chat',
+    'llama-2-13b-chat',
+    'llama-2-70b-chat']
+const allLabels = [
+    'Subtle Baseless Info', 
+    'Evident Baseless Info', 
+    'Subtle Conflict', 
+    'Evident Conflict'];
 
 
 
 
 const getSource = (response, sourceInfo) => sourceInfo.find(si => si.source_id === response.source_id);
+
+const displayModels = async () => {
+    const responseInfo = await data.getResponseInfo();
+    const models = new Set();
+    responseInfo.forEach(r => {
+        models.add(r.model)
+    })
+
+    console.log(models);
+}
 
 const displayLabelTypes = async () => {
     const responseInfo = await data.getResponseInfo();
@@ -165,7 +189,7 @@ const generateTable = async (labelsOfInterest, taskTypes, models) => {
 //generateTable(['Subtle Conflict', 'Evident Conflict'], [], ['gpt-4-0613'])
 displayLabelTypes();
 displayTaskTypes();
-
+displayModels();
 
 
 /**
