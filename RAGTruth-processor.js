@@ -120,7 +120,7 @@ const createTable = async () => {
     return tableName;
 }
 
-const generateTable = async (labelsOfInterest, taskTypes, models) => {
+const generateTable = async (labelsOfInterest, taskTypes, models, res) => {
     const sourceInfo = await data.getSourceInfo();
     const responseInfo = await data.getResponseInfo();
 
@@ -182,15 +182,13 @@ const generateTable = async (labelsOfInterest, taskTypes, models) => {
         packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
 
         const q = `INSERT INTO ${tableName} (package) VALUES (${mysql.escape(JSON.stringify(packaged))})`;
-        console.log(q);
         await mysql.query(q);
 
         // TODO: Store packaged data in SQL
         ++count;
-        console.log(`Packaged ${i+1}`);
     }
 
-    console.log("ALL DONE!", count);
+    res.status(200).send(`Created ${tableName}`);
 }
 
 // generateTable(['Subtle Conflict', 'Evident Conflict'], ['QA'], ['gpt-3.5-turbo-0613'])
@@ -207,9 +205,13 @@ app.use(express.static('public'));
 app.use(express.json({limit: '200mb'})); 
 app.use(cors());
 
+
 app.get('/', async (req, res) => res.status(200).send('hello world'));
 app.get('/tables', (req, res) => endpoints.getTables(req, res));
 
+app.post('/generateTable', async (req, res) => {
+    generateTable(['Subtle Conflict', 'Evident Conflict'], ['QA'], ['gpt-3.5-turbo-0613'], res);
+})
 app.post('/data', (req, res) => endpoints.getData(req, res));
 
 const httpsServer = https.createServer({
