@@ -180,6 +180,8 @@ const generateTable = async (labelsOfInterest, taskTypes, models, res) => {
         }
 
         packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
+        // console.log('packaged', packaged);
+        // break;
 
         const q = `INSERT INTO ${tableName} (package) VALUES (${mysql.escape(JSON.stringify(packaged))})`;
         await mysql.query(q);
