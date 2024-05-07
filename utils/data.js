@@ -1,5 +1,5 @@
 const axios = require('axios');
-
+const fs = require('fs');
 
 exports.response = [];
 
@@ -49,6 +49,19 @@ exports.getResponseInfo = () => {
         });
     })
 }
+
+const prepareData = async () => {
+  const data = await this.getSourceInfo();
+  const prompts = [];
+  for (let i = 0; i < data.length; ++i) {
+    if (data[i].task_type === 'QA') {
+      const output = JSON.stringify(data[i].source_info.question) + "\n"
+      fs.appendFileSync('questions.jsonl', output, 'utf-8')
+    }
+  }
+}
+
+prepareData();
 
 
 

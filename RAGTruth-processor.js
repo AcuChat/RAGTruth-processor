@@ -152,16 +152,17 @@ const generateTable = async (labelsOfInterest, taskTypes, models, res) => {
         // Clean contexts
         let contexts = source.source_info?.passages ? source.source_info.passages.split("\n\n") : source.source_info;
         const passages = source.source_info?.passages ? [...contexts] : contexts;
-        // if (source.source_info?.passages) {
-        //     for (let j = 0; j < contexts.length; ++j) {
-        //         if (contexts[j].startsWith(`passage ${j+1}:`)) contexts[j] = contexts[j].replace(`passage ${j+1}:`, '');
-        //     }
-            
-        //     contexts = await acurai.processContexts(contexts);
-        // }
 
-        // console.log(response)
-        // console.log(source);
+        if (source.source_info?.passages) {
+            for (let j = 0; j < contexts.length; ++j) {
+                if (contexts[j].startsWith(`passage ${j+1}:`)) contexts[j] = contexts[j].replace(`passage ${j+1}:`, '');
+            }
+            
+            contexts = await acurai.processContexts(contexts);
+        }
+
+        // console.log(passages)
+        // console.log(contexts);
         // break;
 
         // Package data
@@ -178,17 +179,18 @@ const generateTable = async (labelsOfInterest, taskTypes, models, res) => {
             disparities: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
             meta: {labelsOfInterest, taskTypes, models},
         }
+        // console.log(packaged); break;
 
         packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
-        console.log('packaged', packaged);
-        break;
+        // console.log('packaged', packaged);
+        // break;
 
         const q = `INSERT INTO ${tableName} (package) VALUES (${mysql.escape(JSON.stringify(packaged))})`;
         await mysql.query(q);
 
         // TODO: Store packaged data in SQL
         ++count;
-      
+        console.log(`Processed #${count}`);
     }
 
     res.status(200).send(`Created ${tableName}`);
