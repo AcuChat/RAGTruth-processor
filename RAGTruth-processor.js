@@ -45,12 +45,7 @@ app.use(cors());
 
 
 app.get('/', async (req, res) => res.status(200).send('hello world'));
-app.get('/tables', (req, res) => endpoints.getTables(req, res));
-
-app.post('/generateTable', async (req, res) => {
-    generateTable(['Subtle Conflict', 'Evident Conflict'], ['QA'], ['gpt-3.5-turbo-0613'], res);
-})
-app.post('/data', (req, res) => endpoints.getData(req, res));
+app.get('/task-types', (req, res) => statbilityService(req, res, taskTypes.taskTypes));
 
 const httpsServer = https.createServer({
     key: fs.readFileSync(privateKeyPath),
