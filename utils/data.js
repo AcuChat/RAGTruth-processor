@@ -15,7 +15,7 @@ exports.getSourceInfo = () => {
               const obj = JSON.parse(lines[i]);
               sourceInfo.push(obj);
             } catch (err) {
-              //console.error('Could not push ', i);
+              console.error('Could not push ', i);
             }
           }
           resolve(sourceInfo);
@@ -50,7 +50,8 @@ exports.getResponseInfo = () => {
     })
 }
 
-const prepareData = async () => {
+
+const extractQaQuestions = async () => {
   const data = await this.getSourceInfo();
   const prompts = [];
   for (let i = 0; i < data.length; ++i) {
@@ -61,8 +62,40 @@ const prepareData = async () => {
   }
 }
 
-prepareData();
+const extractHallucinatedSources = async () => {
+  const sources = await this.getSourceInfo();
+  const responses = await this.getResponseInfo();
+
+  console.log(responses.length);
+
+  let count = 0;
+  let sourceSet = new Set();
+
+  for (let i = 0; i < responses.length; ++i) {
+   
+    const source = sources.find(s => s.source_id === responses[i].source_id);
+    if (source.task_type !== 'QA') continue;
+    if (!responses[i]?.labels?.length) continue;
+    if (responses[i].model === 'mistral-7B-instruct' || responses[i].model === 'llama-2-7b-chat' || responses[i].model === 'llama-2-70b-chat' || responses[i].model === 'llama-2-13b-chat') continue;
+    
+    sourceSet.add(source.source_id);
+    ++count;
+  }
+
+  const sourceArr = Array.from(sourceSet);
+  for (let i = 0; i < sourceArr.length; ++i) {
+    const source = sources.find(s => s.source_id === sourceArr[i]);
+    const { passages } = source.source_info;
+    console.log('passages', passages)
+    passages.split("\n\n").forEach(p => {
+      const passage = p.substring(10).replaceAll('–', '-').replaceAll('’', `'`).replaceAll('‘', `'`).replaceAll('⁄', '/');
+      if (passage) fs.appendFileSync('passages.jsonl', JSON.stringify(passage) + "\n", "utf-8");
+    })
+    console.log(i)
+  }  
+}
+
+//extractQaQuestions();
 
 
-
-
+extractHallucinatedSources();
