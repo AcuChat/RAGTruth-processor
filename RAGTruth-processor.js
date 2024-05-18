@@ -11,8 +11,6 @@ const https = require('https');
 const cors = require('cors');
 const fs = require('fs');
 
-const { table } = require('console');
-const getSource = (response, sourceInfo) => sourceInfo.find(si => si.source_id === response.source_id);
 
 /**
  * Import Endpoints
@@ -20,6 +18,7 @@ const getSource = (response, sourceInfo) => sourceInfo.find(si => si.source_id =
 const taskTypes = require('./endpoints/taskTypes');
 const allModels = require('./endpoints/models');
 const qaLabels = require('./endpoints/qaLabels');
+const sourceInfo = require('./endpoints/sourceInfo');
 
 /**
  * Stability Service
@@ -47,6 +46,7 @@ app.get('/', async (req, res) => res.status(200).send('hello world'));
 app.get('/task-types', (req, res) => statbilityService(req, res, taskTypes.taskTypes));
 app.get('/models', (req, res) => statbilityService(req, res, allModels.models));
 app.get('/qa-labels', (req, res) => statbilityService(req, res, qaLabels.qaLabels));
+app.get('/source-info', (req, res) => statbilityService(req, res, sourceInfo.sourceInfo));
 
 const httpsServer = https.createServer({
     key: fs.readFileSync(privateKeyPath),
