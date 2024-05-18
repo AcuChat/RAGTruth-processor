@@ -19,6 +19,7 @@ const getSource = (response, sourceInfo) => sourceInfo.find(si => si.source_id =
  */
 const taskTypes = require('./endpoints/taskTypes');
 const allModels = require('./endpoints/models');
+const qaLabels = require('./endpoints/qaLabels');
 
 /**
  * Stability Service
@@ -45,6 +46,7 @@ app.use(cors());
 app.get('/', async (req, res) => res.status(200).send('hello world'));
 app.get('/task-types', (req, res) => statbilityService(req, res, taskTypes.taskTypes));
 app.get('/models', (req, res) => statbilityService(req, res, allModels.models));
+app.get('/qa-labels', (req, res) => statbilityService(req, res, qaLabels.qaLabels));
 
 const httpsServer = https.createServer({
     key: fs.readFileSync(privateKeyPath),

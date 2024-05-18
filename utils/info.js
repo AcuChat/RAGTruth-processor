@@ -12,7 +12,7 @@ exports.allModels = [
     'llama-2-7b-chat',
     'llama-2-13b-chat',
     'llama-2-70b-chat']
-exports.allLabels = [
+exports.qaLabels = [
     'Subtle Baseless Info', 
     'Evident Baseless Info', 
     'Subtle Conflict', 
