@@ -3,7 +3,7 @@ const fs = require('fs');
 
 exports.response = [];
 
-exports.getSourceInfo = () => {
+exports.getSourceInfo = (taskTypes = []) => {
     return new Promise((resolve, reject) => {
         let sourceInfo = [];
         axios.get('https://www.michaelcalvinwood.net/datasets/RAGTruth/source_info.jsonl')
@@ -13,6 +13,10 @@ exports.getSourceInfo = () => {
           for (let i = 0; i < lines.length; ++i) {
             try {
               const obj = JSON.parse(lines[i]);
+              if (taskTypes.length) {
+                const test = taskTypes.find(tt => tt === obj.task_type);
+                if (!test) continue;
+              }
               sourceInfo.push(obj);
             } catch (err) {
               console.error('Could not push ', i);
@@ -95,7 +99,3 @@ const extractHallucinatedSources = async () => {
   }  
 }
 
-//extractQaQuestions();
-
-
-extractHallucinatedSources();
