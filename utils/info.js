@@ -1,3 +1,23 @@
+/**
+ * Available Options
+ */
+exports.allTaskTypes = [
+    'Summary', 
+    'Data2txt', 
+    'QA'];
+exports.allModels = [
+    'gpt-4-0613',
+    'gpt-3.5-turbo-0613',
+    'mistral-7B-instruct',
+    'llama-2-7b-chat',
+    'llama-2-13b-chat',
+    'llama-2-70b-chat']
+exports.allLabels = [
+    'Subtle Baseless Info', 
+    'Evident Baseless Info', 
+    'Subtle Conflict', 
+    'Evident Conflict'];
+
 exports.displayModels = async () => {
     const responseInfo = await data.getResponseInfo();
     const models = new Set();

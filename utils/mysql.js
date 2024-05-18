@@ -218,3 +218,124 @@ exports.addContentEntry = async (accountId, contentId, brainId, date, origFileNa
 
   return result;
 }
+
+const labelIsOfInterest = (labels, labelsOfInterest) => {
+  const newLabels = [];
+  for (let i = 0; i < labels.length; ++i) {
+      const test = labelsOfInterest.find(loi => loi === labels[i].label_type);
+      if (test) newLabels.push(labels[i]); 
+  }
+
+  return newLabels;
+}
+
+function formatDate(date) {
+  var d = date === null ? new Date() : new Date(date),
+      month = '' + (d.getMonth() + 1),
+      day = '' + d.getDate(),
+      year = d.getFullYear(),
+      hour = d.getHours(),
+      minutes = d.getMinutes();
+
+  if (month.length < 2) 
+      month = '0' + month;
+  if (day.length < 2) 
+      day = '0' + day;
+  if (hour.length < 2)
+      hour = '0' + hour;
+  if (minutes.length < 2)
+      minutes = '0' + minutes;
+
+  return [year, month, day, hour, minutes].join('_');
+}
+
+
+
+exports.createPackageTable = async () => {
+  const tableName = `packages__${formatDate(null)}`
+  const q = `CREATE TABLE ${tableName} (
+      id BIGINT AUTO_INCREMENT PRIMARY KEY,
+      package MEDIUMTEXT NOT NULL,
+      status VARCHAR(64) DEFAULT 'new'
+  )` 
+
+  await mysql.query(q);
+
+  return tableName;
+}
+
+exports.generateTable = async (labelsOfInterest, taskTypes, models, res) => {
+  const sourceInfo = await data.getSourceInfo();
+  const responseInfo = await data.getResponseInfo();
+
+  let count = 0;
+
+  //Create SQL table
+  const tableName = await createTable();
+  
+  for (let i = 0; i < responseInfo.length; ++i) {
+      const response = responseInfo[i];
+
+      // Filter which responses to process
+      if (!labelIsOfInterest(response.labels, labelsOfInterest)) continue;
+      response.labels = labelIsOfInterest(response.labels, labelsOfInterest);
+      if (!response.labels.length) continue;
+
+      let test = models.find(m => m === response.model);
+      if (!test) continue;
+      
+      
+      // Filter which source types to process
+      const source = getSource(response, sourceInfo);
+      if (!source) continue;
+      
+      const taskType = source.task_type;
+      test = taskTypes.find(tt => tt === taskType);
+      if (!test) continue;
+
+      // Clean contexts
+      let contexts = source.source_info?.passages ? source.source_info.passages.split("\n\n") : source.source_info;
+      const passages = source.source_info?.passages ? [...contexts] : contexts;
+
+      if (source.source_info?.passages) {
+          for (let j = 0; j < contexts.length; ++j) {
+              if (contexts[j].startsWith(`passage ${j+1}:`)) contexts[j] = contexts[j].replace(`passage ${j+1}:`, '');
+          }
+          
+          contexts = await acurai.processContexts(contexts);
+      }
+
+      // console.log(passages)
+      // console.log(contexts);
+      // break;
+
+      // Package data
+      const packaged = {
+          responseId: response.id,
+          sourceId: response.source_id,
+          model: response.model,
+          temperature: response.temperature,
+          taskType: source.task_type,
+          question: source.source_info.question,
+          passages,
+          contexts,
+          origResponse: response.response,
+          disparities: response.labels.map(label => ({text: label.text, meta: label.meta, labelType: label.label_type})),
+          meta: {labelsOfInterest, taskTypes, models},
+      }
+      // console.log(packaged); break;
+
+      packaged.Acurai = await acurai.processRagRequest(packaged.question, contexts, packaged.model, {temperature: packaged.temperature});
+      // console.log('packaged', packaged);
+      // break;
+
+      const q = `INSERT INTO ${tableName} (package) VALUES (${mysql.escape(JSON.stringify(packaged))})`;
+      await mysql.query(q);
+
+      // TODO: Store packaged data in SQL
+      ++count;
+      console.log(`Processed #${count}`);
+  }
+
+  res.status(200).send(`Created ${tableName}`);
+}
