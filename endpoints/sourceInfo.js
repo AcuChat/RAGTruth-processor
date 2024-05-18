@@ -1,6 +1,10 @@
 const data = require('../utils/data');
 
 exports.sourceInfo = async (req, res) => {
-    const sourceInfo = await data.getSourceInfo();
+    let { taskType } = req.query;
+
+    console.log('taskType', taskType);
+    taskType = taskType ? [taskType] : [];
+    const sourceInfo = await data.getSourceInfo(taskType);
     res.status(200).json(sourceInfo);
 }
