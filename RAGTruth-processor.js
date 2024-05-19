@@ -20,6 +20,7 @@ const allModels = require('./endpoints/models');
 const qaLabels = require('./endpoints/qaLabels');
 const sourceInfo = require('./endpoints/sourceInfo');
 const responseInfo = require('./endpoints/responseInfo');
+const getResponses = require('./endpoints/getResponses');
 /**
  * Stability Service
  */
@@ -48,6 +49,8 @@ app.get('/models', (req, res) => statbilityService(req, res, allModels.models));
 app.get('/qa-labels', (req, res) => statbilityService(req, res, qaLabels.qaLabels));
 app.get('/source-info', (req, res) => statbilityService(req, res, sourceInfo.sourceInfo));
 app.get('/response-info', (req, res) => statbilityService(req, res, responseInfo.responseInfo));
+
+app.post('/get-responses', (req, res) => statbilityService(req, res, getResponses.getResponses));
 
 const httpsServer = https.createServer({
     key: fs.readFileSync(privateKeyPath),
