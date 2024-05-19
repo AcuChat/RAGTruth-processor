@@ -31,8 +31,10 @@ exports.getResponses = async (req, res) => {
         if (!test) return;
 
         const source = sourceInfo.find(si => si.source_id === ri.source_id);
-        test = tasks.find(task => task === source.task);
+        console.log('source task', source.task, source)
+        test = tasks.find(task => task === source.task_type);
         if (!test) return;
+        ri.source = source;
         responses.push(ri);
     })
     return res.status(200).json(responses);
