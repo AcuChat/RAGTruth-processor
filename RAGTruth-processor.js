@@ -2,8 +2,8 @@ const mode = 'admin' // use public when submitting
 
 require('dotenv').config();
 const listenPort = process.argv.length === 2 ? 5100 : 5101;
-const privateKeyPath = `/etc/ssl-keys/acurai.ai/acurai.ai.key`;
-const fullchainPath = `/etc/ssl-keys/acurai.ai/acurai.ai.pem`;
+const privateKeyPath = `/etc/letsencrypt/live/ragtruth-processor.acur.ai/privkey.pem`;
+const fullchainPath = `/etc/letsencrypt/live/ragtruth-processor.acur.ai/fullchain.pem`;
 
 const ObjectsToCsv = require('objects-to-csv');
 const express = require('express');
