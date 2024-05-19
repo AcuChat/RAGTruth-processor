@@ -21,6 +21,7 @@ const qaLabels = require('./endpoints/qaLabels');
 const sourceInfo = require('./endpoints/sourceInfo');
 const responseInfo = require('./endpoints/responseInfo');
 const getResponses = require('./endpoints/getResponses');
+const getRagfixResponse = require('./endpoints/getRagfixResponse');
 /**
  * Stability Service
  */
@@ -51,6 +52,7 @@ app.get('/source-info', (req, res) => statbilityService(req, res, sourceInfo.sou
 app.get('/response-info', (req, res) => statbilityService(req, res, responseInfo.responseInfo));
 
 app.post('/get-responses', (req, res) => statbilityService(req, res, getResponses.getResponses));
+app.post('/get-ragfix-response', (req, res) => statbilityService(req, res, getRagfixResponse.getRagfixResponse));
 
 const httpsServer = https.createServer({
     key: fs.readFileSync(privateKeyPath),
