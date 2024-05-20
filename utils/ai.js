@@ -34,11 +34,11 @@ const octoaiTest = async () => {
         "top_p": 0.9
     });
 
-    console.log(completion);
+    //console.log(completion);
     let nextToken = completion?.choices[0]?.message?.content;
 
     nextToken = "[[[DONE]]]";
-    console.log('token', token);
+    //console.log('token', token);
 }
 //octoaiTest();
 

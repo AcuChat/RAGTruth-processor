@@ -31,7 +31,7 @@ exports.getResponses = async (req, res) => {
         if (!test) return;
 
         const source = sourceInfo.find(si => si.source_id === ri.source_id);
-        console.log('source task', source.task, source)
+        //console.log('source task', source.task, source)
         test = tasks.find(task => task === source.task_type);
         if (!test) return;
         ri.source = source;
