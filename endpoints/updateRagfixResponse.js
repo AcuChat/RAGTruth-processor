@@ -61,14 +61,14 @@ const queryUsingNounPhraseCollisionElimination = async (userPrompts, texts, mode
     }
 }
 
-exports.getRagfixResponse = async (req, res) => {
+exports.updateRagfixResponse = async (req, res) => {
     const { responseId, passages, query, model } = req.body;
     if (!responseId) return res.status(400).json('bad command: missing responseId');
 
-    let q = `SELECT responses FROM responses WHERE response_id = ${sql.escape(responseId)}`;
+    let q = `UPDATE responses SET responses = '' WHERE response_id = ${sql.escape(responseId)}`;
     let r = await sql.query(q);
 
-    if (r.length) return res.status(200).send(r[0].responses);
+    if (r.length && r[0].responses) return res.status(200).send(r[0].responses);
 
     if (!passages) return res.status(400).json('bad command: missing passages');
     if (!query) return res.status(400).json('bad command: missing query');
@@ -96,7 +96,7 @@ exports.getRagfixResponse = async (req, res) => {
 
     const ragfixResponses = {ragfixResponses: responses};
 
-    q = `INSERT INTO responses (response_id, responses) VALUES (${sql.escape(responseId)}, ${sql.escape(JSON.stringify(ragfixResponses))})`;
+    q = `UPDATE responses SET responses = ${sql.escape(JSON.stringify(ragfixResponses))} WHERE response_id = ${sql.escape(responseId)}`;
     r = await sql.query(q);
 
     return res.status(200).json(ragfixResponses);
