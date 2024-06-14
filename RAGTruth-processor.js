@@ -2,12 +2,12 @@ const mode = 'admin' // use public when submitting
 
 require('dotenv').config();
 const listenPort = process.argv.length === 2 ? 5100 : 5101;
-const privateKeyPath = `/etc/letsencrypt/live/ragtruth-processor.acur.ai/privkey.pem`;
-const fullchainPath = `/etc/letsencrypt/live/ragtruth-processor.acur.ai/fullchain.pem`;
+
 
 const ObjectsToCsv = require('objects-to-csv');
 const express = require('express');
-const https = require('https');
+//const https = require('https');
+const http = require('http');
 const cors = require('cors');
 const fs = require('fs');
 
@@ -58,12 +58,18 @@ app.post('/get-ragfix-response', (req, res) => statbilityService(req, res, getRa
 app.post('/update-ragfix-response', (req, res) => statbilityService(req, res, updateRagfixResponse.updateRagfixResponse));
 
 
-const httpsServer = https.createServer({
-    key: fs.readFileSync(privateKeyPath),
-    cert: fs.readFileSync(fullchainPath),
-  }, app);
-  
-
-httpsServer.listen(listenPort, '0.0.0.0', () => {
-    console.log(`HTTPS Server running on port ${listenPort}`);
+const server = http.createServer(app);
+server.listen(listenPort, '127.0.0.1', () => {
+  console.log(`Server is running on http://localhost:${listenPort}`);
 });
+
+
+// const httpsServer = https.createServer({
+//     key: fs.readFileSync(privateKeyPath),
+//     cert: fs.readFileSync(fullchainPath),
+//   }, app);
+
+
+// httpsServer.listen(listenPort, '0.0.0.0', () => {
+//     console.log(`HTTPS Server running on port ${listenPort}`);
+// });

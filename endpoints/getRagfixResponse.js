@@ -1,14 +1,18 @@
+require('dotenv').config();
 const axios = require('axios');
 const sql = require('../utils/mysql');
 
-const backend = `https://api.ragfix.ai:5305`;
+const backend = `https://api.ragfix.ai`;
+const { RAGFIX_API_KEY } = process.env;
+
+const apiKey = RAGFIX_API_KEY;
 
 const splitQuery = async (query) => {
     const request = {
         url: backend + '/split-query',
         method: 'post',
         data: {
-            query
+            query, apiKey
         }
     }
 
@@ -24,7 +28,7 @@ const simplifyRoutes = async (texts) => {
         url: backend + '/simplify-routes',
         method: 'post',
         data: {
-            texts
+            texts, apiKey
         }
     }
 
@@ -47,7 +51,8 @@ const queryUsingNounPhraseCollisionElimination = async (userPrompts, texts, mode
             userPrompts,
             model,
             temperature: 0.7,
-            returnTransfer: true
+            returnTransfer: true,
+            apiKey
         }
     }
 
@@ -66,7 +71,9 @@ exports.getRagfixResponse = async (req, res) => {
     if (!responseId) return res.status(400).json('bad command: missing responseId');
 
     let q = `SELECT responses FROM responses WHERE response_id = ${sql.escape(responseId)}`;
+    console.log('q', q);
     let r = await sql.query(q);
+    console.log('r', r);
 
     if (r.length && r[0]?.responses) return res.status(200).send(r[0].responses);
 
