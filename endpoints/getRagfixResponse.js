@@ -2,7 +2,7 @@ require('dotenv').config();
 const axios = require('axios');
 const sql = require('../utils/mysql');
 
-const backend = `https://api-dev.ragfix.ai`;
+const backend = `http://api-dev.ragfix.ai`;
 const { RAGFIX_API_KEY } = process.env;
 
 const apiKey = RAGFIX_API_KEY;
