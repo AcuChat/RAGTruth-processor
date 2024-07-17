@@ -67,6 +67,14 @@ const queryUsingNounPhraseCollisionElimination = async (userPrompts, texts, mode
 }
 
 exports.getRagfixResponse = async (req, res) => {
+
+    return res.status(200).json('We will rewrite here.');
+
+
+
+
+
+    
     const { responseId, passages, query, model } = req.body;
     if (!responseId) return res.status(400).json('bad command: missing responseId');
 

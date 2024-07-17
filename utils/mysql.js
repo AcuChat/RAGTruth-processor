@@ -343,3 +343,26 @@ exports.generateTable = async (labelsOfInterest, taskTypes, models, res) => {
 
   res.status(200).send(`Created ${tableName}`);
 }
+
+
+const createAcuraiValidationTable = async () => {
+  const q = `CREATE TABLE IF NOT EXISTS acurai_validation (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    dataset VARCHAR(64),
+    model VARCHAR(64) DEFAULT 'gpt-4',
+    temperature DECIMAL(3, 2) DEFAULT 0.70,
+    query MEDIUMTEXT,
+    passages MEDIUMTEXT,
+    hallucination MEDIUMTEXT,
+    acurai_response MEDIUMTEXT,
+    validated VARCHAR(8) DEFAULT 'no',
+    meta MEDIUMTEXT,
+    INDEX (dataset),
+    INDEX (model),
+    INDEX (validated)
+  )`
+
+  const response = await this.query(q);
+}
+
+createAcuraiValidationTable();
