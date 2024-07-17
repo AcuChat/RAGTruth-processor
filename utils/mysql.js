@@ -428,4 +428,4 @@ const loadRAGTruth = async () => {
 }
 
 //createAcuraiValidationTable();
-loadRAGTruth();
+//loadRAGTruth();
