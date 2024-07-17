@@ -3,6 +3,7 @@ require('dotenv').config();
 const mysql = require('mysql2');
 const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
+const data = require('./data');
 
 const { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, JWT_PASSWORD } = process.env;
 
@@ -346,14 +347,15 @@ exports.generateTable = async (labelsOfInterest, taskTypes, models, res) => {
 
 
 const createAcuraiValidationTable = async () => {
-  const q = `CREATE TABLE IF NOT EXISTS acurai_validation (
+  let q = `CREATE TABLE IF NOT EXISTS acurai_validation (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     dataset VARCHAR(64),
     model VARCHAR(64) DEFAULT 'gpt-4',
     temperature DECIMAL(3, 2) DEFAULT 0.70,
     query MEDIUMTEXT,
     passages MEDIUMTEXT,
-    hallucination MEDIUMTEXT,
+    response MEDIUMTEXT,
+    hallucination VARCHAR(16) DEFAULT 'no',
     acurai_response MEDIUMTEXT,
     validated VARCHAR(8) DEFAULT 'no',
     meta MEDIUMTEXT,
@@ -362,7 +364,68 @@ const createAcuraiValidationTable = async () => {
     INDEX (validated)
   )`
 
-  const response = await this.query(q);
+  let r = await this.query(q);
+
+  
 }
 
-createAcuraiValidationTable();
+const loadRAGTruth = async () => {
+  /** 
+   * Load RAGTruth Info
+   */
+
+  let q = 'DELETE FROM acurai_validation WHERE dataset = "RAGTruth"';
+  let r = await this.query(q);
+
+  const sourceInfo = await data.getSourceInfo();
+  const responseInfo = await data.getResponseInfo();
+
+  // console.log('sourceInfo[0]', sourceInfo[0]);
+  // console.log('responseInfo[0]', responseInfo[0]);
+
+  const dataset = 'RAGTruth';
+  const acuraiResponse = '';
+
+  for (let i = 0; i < responseInfo.length; ++i) {
+    const response = responseInfo[i];
+    const source = sourceInfo.find(si => si.source_id === response.source_id);
+    const model = response.model;
+    const taskType = source.task_type;
+    if (!model.startsWith('gpt')) continue;
+    if (taskType !== 'QA') continue;
+
+    const temperature = response.temperature;
+    const query = source.source_info.question;
+    const passages = source.source_info.passages.split("\n\n").map(p => p.substring(10));
+    const answer = response.response;
+    let hallucination = 'no';
+    let meta = '{}';
+    const isHallucination = response?.labels?.length ? true : false;
+    if (isHallucination) {
+      hallucination = 'yes';
+      meta = JSON.stringify(response.labels);
+    }
+
+    q = `INSERT INTO acurai_validation (dataset, model, temperature, query, passages, response, hallucination, acurai_response, meta) VALUES (
+      '${dataset}',
+      '${model}',
+      ${temperature},
+      ${this.escape(query)},
+      ${this.escape(JSON.stringify(passages))},
+      ${this.escape(answer)},
+      ${this.escape(hallucination)},
+      '',
+      ${this.escape(meta)}
+    )`
+
+    r = await this.query(q);
+    
+    // console.log(response);
+    // console.log(source);
+
+    console.log(i);
+  }
+}
+
+//createAcuraiValidationTable();
+loadRAGTruth();
