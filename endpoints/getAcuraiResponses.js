@@ -27,7 +27,7 @@ const getTestType = meta => {
 
 const handleRAGTruth = async (req, res, model, types) => {
     model = model || 'gpt-4';
-    let q = `SELECT * FROM acurai_validated WHERE dataset = 'RAGTruth' AND model='${model}'`;
+    let q = `SELECT * FROM acurai_validation WHERE dataset = 'RAGTruth' AND model='${model}'`;
     let r = await sql.query(q);
 
     if (types) r = r.filter(result => {
