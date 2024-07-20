@@ -74,6 +74,13 @@ exports.getRagfixResponse = async (req, res) => {
 
     if (!query || !passages || !passages?.length) return res.status(400).json('bad command');
 
+    q = `SELECT response FROM acurai_validation WHERE id = ${id}`;
+    r = await sql.query(q);
+
+    if (r[0]?.response?.length) {
+        return res.status(200).json({content: r[0].response});
+    }
+
     const request = {
         url: "http://api-dev.ragfix.ai/acurai",
         method: 'post',
