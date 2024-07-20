@@ -54,7 +54,12 @@ const allowedOrigins = [
   'http://acur.ai',
   'https://acur.ai',
   'http://www.acur.ai',
-  'https://www.acur.ai'
+  'https://www.acur.ai',
+  'https://hallucination-analyzer.ragfix.ai',
+  'https://hallucination-analyzer.acur.ai',
+  'http://hallucination-analyzer.ragfix.ai',
+  'http://hallucination-analyzer.acur.ai',
+
 ];
 
 const corsOptions = {
