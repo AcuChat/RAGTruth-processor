@@ -74,11 +74,11 @@ exports.getRagfixResponse = async (req, res) => {
 
     if (!query || !passages || !passages?.length) return res.status(400).json('bad command');
 
-    q = `SELECT response FROM acurai_validation WHERE id = ${id}`;
+    q = `SELECT acurai_response FROM acurai_validation WHERE id = ${id}`;
     r = await sql.query(q);
 
-    if (r[0]?.response?.length && !skip) {
-        return res.status(200).json({content: r[0].response});
+    if (r[0]?.acurai_response?.length && !skip) {
+        return res.status(200).json({content: r[0].acurai_response});
     }
 
     const request = {
@@ -93,7 +93,7 @@ exports.getRagfixResponse = async (req, res) => {
 
     const response = await axios(request);
 
-    q = `UPDATE acurai_validation SET response = ${sql.escape(response?.data?.content)} WHERE id = ${id}`;
+    q = `UPDATE acurai_validation SET acurai_response = ${sql.escape(response?.data?.content)} WHERE id = ${id}`;
     r = await sql.query(q);
 
     console.log(q);
