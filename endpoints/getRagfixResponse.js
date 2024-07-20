@@ -68,51 +68,29 @@ const queryUsingNounPhraseCollisionElimination = async (userPrompts, texts, mode
 
 exports.getRagfixResponse = async (req, res) => {
 
-    return res.status(200).json('We will rewrite here.');
+    const { query, passages, model, temperature, id } = req.body;
 
+    let q, r;
 
+    if (!query || !passages || !passages?.length) return res.status(400).json('bad command');
 
+    const request = {
+        url: "http://api-dev.ragfix.ai/acurai",
+        method: 'post',
+        data: {
+            query,
+            texts: passages,
+            apiKey: RAGFIX_API_KEY
+        }
+    }
 
+    const response = await axios(request);
 
-    
-    const { responseId, passages, query, model } = req.body;
-    if (!responseId) return res.status(400).json('bad command: missing responseId');
-
-    let q = `SELECT responses FROM responses WHERE response_id = ${sql.escape(responseId)}`;
-    console.log('q', q);
-    let r = await sql.query(q);
-    console.log('r', r);
-
-    if (r.length && r[0]?.responses) return res.status(200).send(r[0].responses);
-
-    if (!passages) return res.status(400).json('bad command: missing passages');
-    if (!query) return res.status(400).json('bad command: missing query');
-    if (!model) return res.status(400).json('bad command: missing model');
-
-    /**
-     * Split Query
-     */
-    
-    const prompts = await splitQuery(query);
-    if (prompts === false) return res.status(500).json('unable to split query');
-    console.log('prompts', prompts)
-    
-    /**
-     * Simplify Routes
-     */
-    
-    const routes = await simplifyRoutes(passages);
-
-    /**
-     * Query Usine Noun-Phrase Collision Elimination
-     */
-    
-    const responses = await queryUsingNounPhraseCollisionElimination(prompts, routes, model);
-
-    const ragfixResponses = {ragfixResponses: responses};
-
-    q = `INSERT INTO responses (response_id, responses) VALUES (${sql.escape(responseId)}, ${sql.escape(JSON.stringify(ragfixResponses))}) ON DUPLICATE KEY UPDATE responses = ${sql.escape(JSON.stringify(ragfixResponses))}`;
+    q = `UPDATE acurai_validation SET response = ${sql.escape(response?.data?.content)} WHERE id = ${id}`;
     r = await sql.query(q);
 
-    return res.status(200).json(ragfixResponses);
+    console.log(q);
+    console.log(r);
+
+    return res.status(200).json(response.data);
 }

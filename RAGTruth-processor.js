@@ -44,8 +44,36 @@ const statbilityService = async (req, res, endpoint) => {
 const app = express();
 app.use(express.static('public'));
 app.use(express.json({limit: '200mb'})); 
-app.use(cors());
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://www.ragfix.ai',
+  'https://www.ragfix.ai',
+  'http://ragfix.ai',
+  'https://ragfix.ai',
+  'http://acur.ai',
+  'https://acur.ai',
+  'http://www.acur.ai',
+  'https://www.acur.ai'
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin, like mobile apps or curl requests
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // Allow cookies if needed
+  optionsSuccessStatus: 204 // Some legacy browsers choke on 204
+};
+
+app.use(cors(corsOptions));
 
 app.get('/', async (req, res) => res.status(200).send('hello world'));
 app.get('/task-types', (req, res) => statbilityService(req, res, taskTypes.taskTypes));
