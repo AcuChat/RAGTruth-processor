@@ -427,5 +427,10 @@ const loadRAGTruth = async () => {
   }
 }
 
-//createAcuraiValidationTable();
-//loadRAGTruth();
+const prepareAll = async () => {
+  await createAcuraiValidationTable();
+  await loadRAGTruth();
+}
+
+prepareAll();
+
