@@ -68,7 +68,7 @@ const queryUsingNounPhraseCollisionElimination = async (userPrompts, texts, mode
 
 exports.getRagfixResponse = async (req, res) => {
 
-    const { query, passages, model, temperature, id } = req.body;
+    const { query, passages, model, temperature, id, skip } = req.body;
 
     let q, r;
 
@@ -77,7 +77,7 @@ exports.getRagfixResponse = async (req, res) => {
     q = `SELECT response FROM acurai_validation WHERE id = ${id}`;
     r = await sql.query(q);
 
-    if (r[0]?.response?.length) {
+    if (r[0]?.response?.length && !skip) {
         return res.status(200).json({content: r[0].response});
     }
 
