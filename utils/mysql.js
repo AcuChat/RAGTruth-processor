@@ -432,5 +432,5 @@ const prepareAll = async () => {
   await loadRAGTruth();
 }
 
-prepareAll();
+//prepareAll();
 
