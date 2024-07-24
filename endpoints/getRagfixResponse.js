@@ -87,7 +87,9 @@ exports.getRagfixResponse = async (req, res) => {
         data: {
             query,
             texts: passages,
-            apiKey: RAGFIX_API_KEY
+            apiKey: RAGFIX_API_KEY,
+            model,
+            temperature
         }
     }
 
