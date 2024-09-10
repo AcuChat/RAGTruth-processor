@@ -1,7 +1,7 @@
 const mode = 'admin' // use public when submitting
 
 require('dotenv').config();
-const listenPort = process.argv.length === 2 ? 5100 : 5101;
+const listenPort = process.argv.length === 2 ? 6105 : 6205;
 
 
 const ObjectsToCsv = require('objects-to-csv');
@@ -59,6 +59,9 @@ const allowedOrigins = [
   'https://hallucination-analyzer.acur.ai',
   'http://hallucination-analyzer.ragfix.ai',
   'http://hallucination-analyzer.acur.ai',
+  'http://hallucination-analyzer-dev.ragfix.ai',
+  'http://acurai-db.acur.ai',
+  'https://acurai-db.acur.ai'
 
 ];
 

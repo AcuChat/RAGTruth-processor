@@ -88,7 +88,7 @@ exports.getRagfixResponse = async (req, res) => {
             query,
             texts: passages,
             apiKey: RAGFIX_API_KEY,
-            model,
+            model: 'gpt-4o',
             temperature
         }
     }
@@ -96,7 +96,7 @@ exports.getRagfixResponse = async (req, res) => {
     const response = await axios(request);
 
     q = `UPDATE acurai_validation SET acurai_response = ${sql.escape(response?.data?.content)} WHERE id = ${id}`;
-    //r = await sql.query(q);
+    r = await sql.query(q);
 
     console.log(q);
     console.log(r);
